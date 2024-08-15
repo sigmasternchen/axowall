@@ -1,0 +1,106 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <script src="main.js"></script>
+  <style>
+    .captcha {
+      width: 300px;
+      height: 70px;
+      padding: 20px;
+      border: 1px solid grey;
+      box-sizing: border-box;
+      font-size: 20px;
+      font-family: sans-serif;
+    }
+    
+    .captcha span {
+      position: relative;
+      top: -9px;
+    }
+    
+    .captcha .checkbox {
+      position: relative;
+      margin: 0;
+      margin-right: 20px;
+      height: 30px;
+      width: 30px;
+      display: inline-block;
+      background-color: white;
+      cursor: pointer;
+      border: 1px solid black;
+      border-radius: 3px;
+    }
+    
+    .captcha .checkbox:hover {
+      background-color: lightgrey;
+    }
+    
+    .captcha .checkbox.checked {
+      background-color: #2196F3;
+    }
+    
+    .captcha .checkbox.checked::before {
+      position: absolute;
+      display: block;
+      content: "";
+      width: 7px;
+      height: 15px;
+      top: 2px;
+      left: 9px;
+      border: white solid;
+      border-width: 0 5px 5px 0;
+      transform: rotate(45deg);
+    }
+    
+    .captcha .checkbox.loading {
+    }
+    
+    .captcha .checkbox.loading::before {
+      content: "";
+      display: block;
+      position: absolute;
+      top: 2.5px;
+      left: 2.5px;
+      width: 17px;
+      height: 17px;
+      border: 4px solid;
+      border-radius: 50%;
+      border-color: black transparent black transparent;
+      animation: captchaLoading infinite 1s;
+    }
+    
+    @keyframes captchaLoading {
+      to{
+        transform: rotate(.5turn)
+      }
+    }
+
+    
+  </style>
+  <script>
+    window.addEventListener("load", () => {
+      [...document.querySelectorAll(".captcha .checkbox")].forEach(c => c.addEventListener("click", async function() {
+        const result = document.getElementById("result");
+        result.innerText = "Calculating..."; 
+      
+        this.classList.add("loading");
+        
+        const challenge = makeSuffix(Math.floor(Math.random() * Number.MAX_SAFE_INTEGER)) + ":" + makeSuffix(new Date().valueOf()) + ":";
+        
+        const response = await findHashWithPrefix(15, challenge);
+        result.innerText = "Challenge Response: " + response;
+        
+        this.classList.remove("loading");
+        this.classList.add("checked");
+      }));
+    });
+  </script>
+</head>
+<body>
+  <div class="captcha">
+    <div class="checkbox"></div>
+    <span>I am not a robot.</span>
+  </div>
+  <div id="result"></div>
+</body>
+</html>
