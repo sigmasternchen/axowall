@@ -5,6 +5,7 @@
   "main": "src/main.ts",
   "scripts": {
     "build": "esbuild src/main.ts --bundle --outfile=public/bundle.js",
+    "build-mini": "esbuild src/main.ts --minify --bundle --outfile=public/bundle.js",
     "test": "echo \"Error: no test specified\" && exit 1"
   },
   "repository": {

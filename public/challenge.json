@@ -1,0 +1,5 @@
+{
+  "algo": "SHA-256",
+  "prefixBits": "15",
+  "input": "challenge:"
+}
