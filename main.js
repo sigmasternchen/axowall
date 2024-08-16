@@ -51,3 +51,31 @@ async function findHashWithPrefix(hashPrefixBits, inputPrefix) {
     
     return message;
 }
+
+window.addEventListener("load", () => {
+    console.log("load");
+    [...document.getElementsByClassName("captcha")].forEach(captcha => {
+        console.dir(captcha);
+        const checkbox = document.createElement("div");
+        checkbox.classList.add("checkbox");
+        captcha.append(checkbox);
+        
+        const text = document.createElement("span");
+        text.innerText = "I am not a robot";
+        captcha.append(text);
+    
+        checkbox.addEventListener("click", async function() {
+            console.log("Calculating..."); 
+
+            this.classList.add("loading");
+
+            const challenge = makeSuffix(Math.floor(Math.random() * Number.MAX_SAFE_INTEGER)) + ":" + makeSuffix(new Date().valueOf()) + ":";
+
+            const response = await findHashWithPrefix(15, challenge);
+            console.log("Challenge Response: " + response);
+
+            this.classList.remove("loading");
+            this.classList.add("checked");
+        })
+    });
+});

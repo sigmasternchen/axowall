@@ -6,7 +6,7 @@
     .captcha {
       width: 300px;
       height: 70px;
-      padding: 20px;
+      padding: 19px;
       border: 1px solid grey;
       box-sizing: border-box;
       font-size: 20px;
@@ -78,29 +78,9 @@
     
   </style>
   <script>
-    window.addEventListener("load", () => {
-      [...document.querySelectorAll(".captcha .checkbox")].forEach(c => c.addEventListener("click", async function() {
-        const result = document.getElementById("result");
-        result.innerText = "Calculating..."; 
-      
-        this.classList.add("loading");
-        
-        const challenge = makeSuffix(Math.floor(Math.random() * Number.MAX_SAFE_INTEGER)) + ":" + makeSuffix(new Date().valueOf()) + ":";
-        
-        const response = await findHashWithPrefix(15, challenge);
-        result.innerText = "Challenge Response: " + response;
-        
-        this.classList.remove("loading");
-        this.classList.add("checked");
-      }));
-    });
   </script>
 </head>
 <body>
-  <div class="captcha">
-    <div class="checkbox"></div>
-    <span>I am not a robot.</span>
-  </div>
-  <div id="result"></div>
+  <div class="captcha"></div>
 </body>
 </html>
