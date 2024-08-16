@@ -8,6 +8,10 @@ const CLASS_LOADING = "loading";
 const CLASS_CHECKED = "checked";
 const CLASS_SILENT = "silent";
 
+const DATA_CHALLENGE_URL = "data-challenge-url";
+const DATA_SUCCESS_CALLBACK = "data-success-callback";
+const DATA_INPUT_SELECTOR = "data-input-selector";
+
 const findHashWithPrefix = async (algo: string, hashPrefixBits: number, inputPrefix: string): Promise<string> => {
     const hashPrefix = new Uint8Array(Array(Math.ceil(hashPrefixBits / 8)).map(_ => 0));
     let iteration = 0;
@@ -61,15 +65,15 @@ const prepareInputCaptcha = (captcha: Element, challengeCompletedCallback: (resp
 }
 
 const prepareCaptcha = async (captcha: Element) => {
-    const challengeUrl = captcha.getAttribute("data-challenge-url");
+    const challengeUrl = captcha.getAttribute(DATA_CHALLENGE_URL);
+    const successCallback = captcha.getAttribute(DATA_SUCCESS_CALLBACK);
+    const inputSelector = captcha.getAttribute(DATA_INPUT_SELECTOR);
+
     if (!challengeUrl) {
         throw "No challenge URL found.";
     }
 
     const challengeCompletesCallback = (response: string) => {
-        const successCallback = captcha.getAttribute("data-success-callback");
-        const inputSelector = captcha.getAttribute("data-input-selector");
-
         if (successCallback) eval(successCallback)(response);
         if (inputSelector) [...document.querySelectorAll(inputSelector)].forEach((input: HTMLInputElement) => input.value = response)
     };
