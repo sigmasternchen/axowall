@@ -14,10 +14,8 @@ Uint8Array.prototype.hasPrefix = function(prefix: Uint8Array, bits: number): boo
     for(let i = 0; i < prefix.length && i * 8 < bits; i++) {
         const bitsForByte = Math.min(8, bits - i * 8);
         const bitMask = ((1 << bitsForByte) - 1) << (8 - bitsForByte);
-        const currentBits = this[i] & bitMask;
-        const prefixBits = prefix[i] & bitMask;
 
-        if (currentBits != prefixBits) {
+        if ((this[i] & bitMask) != (prefix[i] & bitMask)) {
             return false;
         }
     }
