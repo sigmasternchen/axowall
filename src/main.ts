@@ -25,6 +25,7 @@ const findHashWithPrefix = async (algo: string, hashPrefixBits: number, inputPre
 }
 
 function initCaptchaContentAndGetCheckbox(captcha: Element): Element {
+    captcha.textContent = ""; // clear node
     const checkbox = document.createElement("div");
     checkbox.classList.add(CLASS_CHECKBOX, CLASS_LOADING);
 
@@ -77,9 +78,16 @@ const prepareCaptcha = async (captcha: Element) => {
         throw "No challenge URL found.";
     }
 
+    const setInputValue = (response: string) => {
+        if (inputSelector) [...document.querySelectorAll(inputSelector)].forEach((input: HTMLInputElement) => input.value = response)
+    }
+
+    // reset form input value
+    setInputValue("");
+
     const challengeCompletesCallback = (response: string) => {
         if (successCallback) [eval][0](successCallback)(response);
-        if (inputSelector) [...document.querySelectorAll(inputSelector)].forEach((input: HTMLInputElement) => input.value = response)
+        setInputValue(response);
     };
 
     const initDoneCallback = (captcha.classList.contains(CLASS_SILENT)
@@ -100,3 +108,11 @@ const prepareCaptcha = async (captcha: Element) => {
 window.addEventListener("load", () =>
     [...document.getElementsByClassName("captcha")].forEach(prepareCaptcha)
 );
+
+declare global {
+    interface Window {
+        prepareCaptcha: (captcha: Element) => Promise<void>;
+    }
+}
+
+window.prepareCaptcha = prepareCaptcha;
