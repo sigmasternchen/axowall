@@ -37,14 +37,11 @@ const toggleChecked = (checkbox: Element) =>
 const toggleLoading = (checkbox: Element) =>
     checkbox.classList.toggle(CLASS_LOADING);
 
-function prepareChallengeExecution(challenge: Challenge): () => Promise<void> {
+function prepareChallengeExecution(challenge: Challenge, callback: (response: string) => void): () => Promise<void> {
     return async function() {
-        console.log("Calculating...");
-
         toggleLoading(this);
 
-        const response = await findHashWithPrefix(challenge.algo, challenge.prefixBits, challenge.input);
-        console.log("Challenge Response: " + response);
+        callback(await findHashWithPrefix(challenge.algo, challenge.prefixBits, challenge.input));
 
         toggleLoading(this);
         toggleChecked(this);
@@ -57,6 +54,8 @@ const prepareCaptcha = async (captcha: Element) => {
         throw "No challenge URL found.";
     }
 
+    let successCallback = captcha.getAttribute("data-success-callback");
+
     const checkbox = initCaptchaContentAndGetCheckbox(captcha);
 
     const challengeResponse = await fetch(challengeUrl);
@@ -68,7 +67,9 @@ const prepareCaptcha = async (captcha: Element) => {
 
     toggleLoading(checkbox);
 
-    checkbox.addEventListener("click", prepareChallengeExecution(challenge));
+    checkbox.addEventListener("click", prepareChallengeExecution(challenge, response => {
+        if (successCallback) eval(successCallback)(response);
+    }));
 }
 
 window.addEventListener("load", () =>
