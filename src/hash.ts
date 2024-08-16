@@ -7,7 +7,7 @@ declare global {
 }
 
 Uint8Array.prototype.toHex = function(): string {
-    return [...this].map(c => (c >> 4).toString(16) + (c & 15).toString(16)).join("");
+    return [...this].map(c => c.toString(16).padStart(2, "0")).join("");
 };
 
 Uint8Array.prototype.hasPrefix = function(prefix: Uint8Array, bits: number): boolean {
