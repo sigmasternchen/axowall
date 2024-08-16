@@ -74,7 +74,7 @@ const prepareCaptcha = async (captcha: Element) => {
     }
 
     const challengeCompletesCallback = (response: string) => {
-        if (successCallback) eval(successCallback)(response);
+        if (successCallback) [eval][0](successCallback)(response);
         if (inputSelector) [...document.querySelectorAll(inputSelector)].forEach((input: HTMLInputElement) => input.value = response)
     };
 
