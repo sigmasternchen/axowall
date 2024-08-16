@@ -6,7 +6,7 @@ const suffixCharset = [
 ].flatMap(set => set.split(""));
 const suffixCharsetBits = 6;
 
-export function makeSuffix(index) {
+export function makeSuffix(index: number): string {
     let result = "";
 
     while (index > 0) {

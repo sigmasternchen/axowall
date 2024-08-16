@@ -2,9 +2,9 @@
   "name": "axowall",
   "version": "0.0.1",
   "description": "",
-  "main": "src/main.js",
+  "main": "src/main.ts",
   "scripts": {
-    "build": "esbuild src/main.js --bundle --outfile=public/bundle.js",
+    "build": "esbuild src/main.ts --bundle --outfile=public/bundle.js",
     "test": "echo \"Error: no test specified\" && exit 1"
   },
   "repository": {

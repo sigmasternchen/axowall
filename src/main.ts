@@ -1,12 +1,12 @@
 import {makeSuffix} from "./content";
 import {digest, sha256} from "./hash";
 
-async function findHashWithPrefix(hashPrefixBits, inputPrefix) {
-    const hashPrefix = new Uint8Array(Array(Math.ceil(hashPrefixBits / 8)).map(c => 0));
+async function findHashWithPrefix(hashPrefixBits: number, inputPrefix: string): Promise<string> {
+    const hashPrefix = new Uint8Array(Array(Math.ceil(hashPrefixBits / 8)).map(_ => 0));
     let iteration = 0;
     
     do {
-        var message = inputPrefix + makeSuffix(iteration++)
+        var message = inputPrefix + makeSuffix(iteration++);
         var hash = await digest(sha256, message);
     } while (!hash.hasPrefix(hashPrefix, hashPrefixBits));
     
