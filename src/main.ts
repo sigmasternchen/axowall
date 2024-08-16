@@ -11,6 +11,7 @@ const CLASS_SILENT = "silent";
 const DATA_CHALLENGE_URL = "data-challenge-url";
 const DATA_SUCCESS_CALLBACK = "data-success-callback";
 const DATA_INPUT_SELECTOR = "data-input-selector";
+const DATA_TEXT = "data-text";
 
 const findHashWithPrefix = async (algo: string, hashPrefixBits: number, inputPrefix: string): Promise<string> => {
     const hashPrefix = new Uint8Array(Array(Math.ceil(hashPrefixBits / 8)).map(_ => 0));
@@ -30,7 +31,7 @@ function initCaptchaContentAndGetCheckbox(captcha: Element): Element {
     checkbox.classList.add(CLASS_CHECKBOX, CLASS_LOADING);
 
     const text = document.createElement("span");
-    text.innerText = "I am not a robot";
+    text.innerText = captcha.getAttribute(DATA_TEXT) || "I am not a robot";
 
     captcha.append(checkbox, text);
 
