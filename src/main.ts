@@ -6,6 +6,7 @@ import {Challenge, validateChallenge} from "./challenge";
 const CLASS_CHECKBOX = "checkbox";
 const CLASS_LOADING = "loading";
 const CLASS_CHECKED = "checked";
+const CLASS_SILENT = "silent";
 
 const findHashWithPrefix = async (algo: string, hashPrefixBits: number, inputPrefix: string): Promise<string> => {
     const hashPrefix = new Uint8Array(Array(Math.ceil(hashPrefixBits / 8)).map(_ => 0));
@@ -37,14 +38,25 @@ const toggleChecked = (checkbox: Element) =>
 const toggleLoading = (checkbox: Element) =>
     checkbox.classList.toggle(CLASS_LOADING);
 
-function prepareChallengeExecution(challenge: Challenge, callback: (response: string) => void): () => Promise<void> {
-    return async function() {
-        toggleLoading(this);
+const executeChallenge = async (challenge: Challenge, challengeCompletedCallback: (response: string) => void): Promise<void> => {
+    challengeCompletedCallback(await findHashWithPrefix(challenge.algo, challenge.prefixBits, challenge.input));
+}
 
-        callback(await findHashWithPrefix(challenge.algo, challenge.prefixBits, challenge.input));
+const prepareSilentCaptcha = (_: Element, challengeCompletedCallback: (response: string) => void): (challenge: Challenge) => Promise<void> => {
+    return async (challenge: Challenge) => await executeChallenge(challenge, challengeCompletedCallback);
+}
 
-        toggleLoading(this);
-        toggleChecked(this);
+const prepareInputCaptcha = (captcha: Element, challengeCompletedCallback: (response: string) => void): (challenge: Challenge) => Promise<void> => {
+    const checkbox = initCaptchaContentAndGetCheckbox(captcha);
+
+    return async (challenge: Challenge) => {
+        checkbox.addEventListener("click", async function() {
+            toggleLoading(this);
+            await executeChallenge(challenge, challengeCompletedCallback);
+            toggleLoading(this);
+            toggleChecked(this);
+        });
+        toggleLoading(checkbox);
     }
 }
 
@@ -54,10 +66,18 @@ const prepareCaptcha = async (captcha: Element) => {
         throw "No challenge URL found.";
     }
 
-    let successCallback = captcha.getAttribute("data-success-callback");
-    let inputSelector = captcha.getAttribute("data-input-selector");
+    const challengeCompletesCallback = (response: string) => {
+        const successCallback = captcha.getAttribute("data-success-callback");
+        const inputSelector = captcha.getAttribute("data-input-selector");
 
-    const checkbox = initCaptchaContentAndGetCheckbox(captcha);
+        if (successCallback) eval(successCallback)(response);
+        if (inputSelector) [...document.querySelectorAll(inputSelector)].forEach((input: HTMLInputElement) => input.value = response)
+    };
+
+    const initDoneCallback = (captcha.classList.contains(CLASS_SILENT)
+            ? prepareSilentCaptcha
+            : prepareInputCaptcha)
+        (captcha, challengeCompletesCallback);
 
     const challengeResponse = await fetch(challengeUrl);
     const challenge = await challengeResponse.json() as Challenge;
@@ -66,12 +86,7 @@ const prepareCaptcha = async (captcha: Element) => {
         throw "Challenge is invalid.";
     }
 
-    toggleLoading(checkbox);
-
-    checkbox.addEventListener("click", prepareChallengeExecution(challenge, response => {
-        if (successCallback) eval(successCallback)(response);
-        if (inputSelector) [...document.querySelectorAll(inputSelector)].forEach((input: HTMLInputElement) => input.value = response)
-    }));
+    await initDoneCallback(challenge);
 }
 
 window.addEventListener("load", () =>

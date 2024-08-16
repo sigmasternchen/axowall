@@ -8,6 +8,10 @@
     font-family: sans-serif;
 }
 
+.captcha.silent {
+    display: none;
+}
+
 .captcha span {
     position: relative;
     top: -9px;
