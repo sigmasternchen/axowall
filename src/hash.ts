@@ -1,6 +1,3 @@
-const hexCharset = "0123456789abcdef".split("");
-
-export const sha256: AlgorithmIdentifier = "SHA-256";
 
 declare global {
     interface Uint8Array {
@@ -10,7 +7,7 @@ declare global {
 }
 
 Uint8Array.prototype.toHex = function(): string {
-    return [...this].map(c => hexCharset[c >> 4] + hexCharset[c & 15]).join("");
+    return [...this].map(c => (c >> 4).toString(16) + (c & 15).toString(16)).join("");
 };
 
 Uint8Array.prototype.hasPrefix = function(prefix: Uint8Array, bits: number): boolean {
@@ -27,6 +24,5 @@ Uint8Array.prototype.hasPrefix = function(prefix: Uint8Array, bits: number): boo
     return true;
 };
 
-export async function digest(algo: AlgorithmIdentifier, input: string): Promise<Uint8Array> {
-    return new Uint8Array(await crypto.subtle.digest(algo, new TextEncoder().encode(input)));
-}
+export const digest = async (algo: AlgorithmIdentifier, input: string): Promise<Uint8Array> =>
+    new Uint8Array(await crypto.subtle.digest(algo, new TextEncoder().encode(input)));

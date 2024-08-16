@@ -5,6 +5,5 @@ export type Challenge = {
     input: string,
 }
 
-export function validateChallenge(challenge: Challenge): boolean {
-    return !!challenge.algo && challenge.prefixBits > 0 && !!challenge.input;
-}
+export const validateChallenge = (challenge: Challenge): boolean =>
+    !!challenge.algo && challenge.prefixBits > 0 && !!challenge.input;
