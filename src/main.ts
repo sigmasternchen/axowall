@@ -55,6 +55,7 @@ const prepareCaptcha = async (captcha: Element) => {
     }
 
     let successCallback = captcha.getAttribute("data-success-callback");
+    let inputSelector = captcha.getAttribute("data-input-selector");
 
     const checkbox = initCaptchaContentAndGetCheckbox(captcha);
 
@@ -69,6 +70,7 @@ const prepareCaptcha = async (captcha: Element) => {
 
     checkbox.addEventListener("click", prepareChallengeExecution(challenge, response => {
         if (successCallback) eval(successCallback)(response);
+        if (inputSelector) [...document.querySelectorAll(inputSelector)].forEach((input: HTMLInputElement) => input.value = response)
     }));
 }
 

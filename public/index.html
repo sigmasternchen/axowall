@@ -5,6 +5,11 @@
   <link href="bundle.css" rel="stylesheet">
 </head>
 <body>
-  <div class="captcha" data-challenge-url="/challenge.json" data-success-callback="console.log"></div>
+  <div class="captcha"
+       data-challenge-url="/challenge.json"
+       data-success-callback="console.log"
+       data-input-selector=".response"
+  ></div>
+  <input type="text" value="" class="response">
 </body>
 </html>
