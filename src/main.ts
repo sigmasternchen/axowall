@@ -55,6 +55,10 @@ const prepareInputCaptcha = (captcha: Element, challengeCompletedCallback: (resp
 
     return async (challenge: Challenge) => {
         checkbox.addEventListener("click", async function() {
+            if (this.classList.contains(CLASS_LOADING) || this.classList.contains(CLASS_CHECKED)) {
+                return;
+            }
+
             toggleLoading(this);
             await executeChallenge(challenge, challengeCompletedCallback);
             toggleLoading(this);
