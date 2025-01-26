@@ -55,15 +55,15 @@ const toggleChecked = (checkbox: Element) =>
 const toggleLoading = (checkbox: Element) =>
     checkbox[classList].toggle(CLASS_LOADING);
 
-const executeChallenge = async (challenge: Challenge, challengeCompletedCallback: (response: string) => void): Promise<void> => {
-    challengeCompletedCallback(await findHashWithPrefix(challenge.algo, challenge.prefixBits, challenge.input));
+const executeChallenge = async (challenge: Challenge, challengeCompletedCallback: (response: string) => Promise<void>): Promise<void> => {
+    await challengeCompletedCallback(await findHashWithPrefix(challenge.algo, challenge.prefixBits, challenge.input));
 }
 
-const prepareSilentCaptcha = (_: Element, challengeCompletedCallback: (response: string) => void): (challenge: Challenge) => Promise<void> => {
+const prepareSilentCaptcha = (_: Element, challengeCompletedCallback: (response: string) => Promise<void>): (challenge: Challenge) => Promise<void> => {
     return async (challenge: Challenge) => await executeChallenge(challenge, challengeCompletedCallback);
 }
 
-const prepareInputCaptcha = (captcha: Element, challengeCompletedCallback: (response: string) => void): (challenge: Challenge) => Promise<void> => {
+const prepareInputCaptcha = (captcha: Element, challengeCompletedCallback: (response: string) => Promise<void>): (challenge: Challenge) => Promise<void> => {
     const checkbox = initCaptchaContentAndGetCheckbox(captcha);
 
     return async (challenge: Challenge) => {
@@ -83,7 +83,7 @@ const prepareInputCaptcha = (captcha: Element, challengeCompletedCallback: (resp
     }
 }
 
-const prepareCaptcha = async (captcha: Element) => {
+const prepareCaptcha = async (captcha: Element, staticSuccessCallback?: (response: string) => Promise<void>) => {
     const challengeUrl = captcha[getAttribute](DATA_CHALLENGE_URL);
     const successCallback = captcha[getAttribute](DATA_SUCCESS_CALLBACK);
     const inputSelector = captcha[getAttribute](DATA_INPUT_SELECTOR);
@@ -92,8 +92,9 @@ const prepareCaptcha = async (captcha: Element) => {
         if (inputSelector) [..._document[querySelectorAll](inputSelector)].forEach((input: HTMLInputElement) => input.value = response)
     }
 
-    const challengeCompletesCallback = (response: string) => {
-        if (successCallback) [eval][0](successCallback)(response);
+    const challengeCompletesCallback = async (response: string) => {
+        if (staticSuccessCallback) await staticSuccessCallback(response);
+        else if (successCallback) [eval][0](successCallback)(response);
         setInputValue(response);
     };
 
