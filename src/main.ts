@@ -110,7 +110,9 @@ const prepareCaptcha = async (captcha: Element, staticSuccessCallback?: (respons
             : prepareInputCaptcha)
         (captcha, challengeCompletesCallback);
 
-    const challengeResponse = await fetch(challengeUrl);
+    const challengeResponse = await fetch(challengeUrl, {
+        credentials: "include",
+    });
     const challenge = await challengeResponse.json() as Challenge;
 
     if (!validateChallenge(challenge)) {
